@@ -915,7 +915,7 @@ export function HomeView() {
                 src="/assets/code-for-cat/logo-3d.png"
                 alt="Logo"
                 ratio="1/1"
-                sx={{ width: { xs: 50, md: 200 }, height: { xs: 50, md: 200 } }}
+                sx={{ width: { xs: 250, md: 250 }, height: { xs: 250, md: 250 } }}
               />
               <Typography sx={{ mt: 1.4, color: 'primary.darker', fontSize: 18, fontWeight: 900 }}>
                 Quick and Easy Launch

@@ -108,9 +108,10 @@ export function CodeForCatHeader({ activeHref, sticky = false }: CodeForCatHeade
           left: isPinned ? '50%' : 'auto',
           zIndex: isPinned ? 20 : 'auto',
           mx: 'auto',
-          p: 2,
+          py: 2,
+          px: 3,
           width: isPinned
-            ? { xs: 'calc(100% - 40px)', md: 'min(1200px, calc(100% - 10% - 16px))' }
+            ? { xs: 'calc(100% - 70px)', md: 'min(1200px, calc(100% - 10% - 16px))' }
             : 1,
           maxWidth: 1200,
           position: isPinned ? 'fixed' : 'relative',
@@ -137,10 +138,10 @@ export function CodeForCatHeader({ activeHref, sticky = false }: CodeForCatHeade
             sx={{ flexShrink: 0, textDecoration: 'none' }}
           >
             <Image
-              src="/assets/code-for-cat/logo.png"
+              src="/assets/code-for-cat/face.png"
               alt="Code for Cat logo"
               ratio="1/1"
-              sx={{ width: { xs: 20, md: 28 }, height: { xs: 20, md: 28 } }}
+              sx={{ width: { xs: 32, md: 48 }, height: { xs: 32, md: 48 } }}
             />
             <Typography
               sx={{

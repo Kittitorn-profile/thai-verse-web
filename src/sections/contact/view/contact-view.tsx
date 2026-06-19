@@ -47,8 +47,6 @@ const contactItems = [
   },
 ] as const;
 
-const projectTypes = ['เว็บไซต์บริษัท', 'Landing page', 'Mobile app', 'ระบบหลังบ้าน'];
-
 export function ContactView() {
   return (
     <Box
@@ -75,7 +73,7 @@ export function ContactView() {
         <Box
           sx={{
             px: { xs: 2.25, md: 5 },
-            py: { xs: 7, md: 5 },
+            py: { xs: 2.25, md: 5 },
             backgroundImage: `
               linear-gradient(90deg, rgba(45,40,34,0.06) 1px, transparent 1px),
               linear-gradient(180deg, rgba(45,40,34,0.06) 1px, transparent 1px)

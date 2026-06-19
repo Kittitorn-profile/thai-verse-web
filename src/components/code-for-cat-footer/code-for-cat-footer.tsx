@@ -66,12 +66,12 @@ export function CodeForCatFooter() {
         }}
       >
         <Box>
-          <Stack direction="row" spacing={1} alignItems="center">
+          <Stack spacing={1} alignItems="start">
             <Image
-              src="/assets/code-for-cat/logo.png"
+              src="/assets/code-for-cat/face.png"
               alt="Code for Cat logo"
               ratio="1/1"
-              sx={{ width: { xs: 20, md: 28 }, height: { xs: 20, md: 28 } }}
+              sx={{ width: { xs: 80, md: 60 }, height: { xs: 80, md: 60 } }}
             />
             <Typography sx={{ color: tone.ink, fontSize: 18, fontWeight: 950 }}>
               Code for Cat

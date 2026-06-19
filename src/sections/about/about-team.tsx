@@ -133,6 +133,7 @@ export function AboutTeam({ sx, ...other }: BoxProps) {
     >
       <Box
         sx={{
+          px: { xs: 2, md: 3 },
           mx: 'auto',
           maxWidth: '100%',
           overflow: 'hidden',
