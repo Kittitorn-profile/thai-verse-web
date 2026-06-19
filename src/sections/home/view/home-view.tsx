@@ -1,901 +1,987 @@
 'use client';
 
-import { useState } from 'react';
-import Fade from 'embla-carousel-fade';
-import ReactPlayer from 'react-player';
-import Autoplay from 'embla-carousel-autoplay';
-
-import { Box } from '@mui/material';
+import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
-import Dialog from '@mui/material/Dialog';
-import { useTheme } from '@mui/material/styles';
-import IconButton from '@mui/material/IconButton';
+import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import DialogContent from '@mui/material/DialogContent';
-
-import { CONFIG } from 'src/global-config';
 
 import { Image } from 'src/components/image';
 import { Iconify } from 'src/components/iconify';
-import { Carousel, useCarousel } from 'src/components/carousel';
-
-import ThailandMap from './thailand-map';
+import { CodeForCatHeader } from 'src/components/code-for-cat-header';
+import { CodeForCatFooter } from 'src/components/code-for-cat-footer';
 
 // ----------------------------------------------------------------------
 
-const HERO_IMAGE = [
-  '/assets/background/akhahas-sri-1.jpg',
-  '/assets/background/akhahas-sri-2.jpg',
-  '/assets/background/akhahas-sri-3.jpg',
-  '/assets/background/akhahas-sri-4.jpg',
-  '/assets/background/akhahas-sri-5.jpg',
-  '/assets/background/akhahas-sri-6.jpg',
-  '/assets/background/akhahas-sri-7.jpg',
-].slice(0, 7);
-const SCENES_IMAGE = '/assets/akhahas-sri/hero-2.jpg';
-const MEMORIAL_IMAGE = '/assets/akhahas-sri/rip-1.jpeg';
-const KRU_IMAGE = '/assets/akhahas-sri/bg-1.jpg';
+const partnerItems = ['WEBSITE', 'MOBILE APP', 'UI/UX', 'E-COMMERCE', 'SYSTEM', 'CMS'];
 
-const SCENES_1_IMAGE = '/assets/akhahas-sri/hero-5.jpeg';
-
-const highlights = [
+const clientItems = [
   {
-    icon: '99',
-    title: 'ผลงานการแสดง',
-    body: 'การแสดงดนตรีพื้นบ้านอีสานและกิจกรรมทางวัฒนธรรมในหลากหลายเวที',
+    name: 'North Studio',
+    logo: '/assets/images/mock/company/company-1.webp',
   },
   {
-    icon: '99',
-    title: 'สมาชิกวง',
-    body: 'นักดนตรี นักแสดง และทีมสร้างสรรค์ที่ร่วมสืบสานศิลปวัฒนธรรมอีสาน',
+    name: 'Mellow Cafe',
+    logo: '/assets/images/mock/company/company-2.webp',
   },
   {
-    icon: '99',
-    title: 'รางวัลและเวทีประกวด',
-    body: 'ประสบการณ์จากการแสดงและการแข่งขันดนตรีพื้นบ้านระดับภูมิภาคและระดับประเทศ',
+    name: 'Urban Clinic',
+    logo: '/assets/images/mock/company/company-3.webp',
+  },
+  {
+    name: 'Craft Market',
+    logo: '/assets/images/mock/company/company-4.webp',
+  },
+  {
+    name: 'Siam Retail',
+    logo: '/assets/images/mock/company/company-5.webp',
+  },
+  {
+    name: 'Lanna Works',
+    logo: '/assets/images/mock/company/company-6.webp',
   },
 ];
 
-const ROYAL_IMAGE_ITEMS = [
+const tabs = ['เว็บไซต์', 'แอป', 'ระบบหลังบ้าน', 'ร้านค้า', 'ดูแลต่อ'];
+
+const featureItems = [
+  'ออกแบบหน้าตาให้ตรงแบรนด์และใช้งานง่าย',
+  'พัฒนาเว็บไซต์ แอป และระบบหลังบ้านตามความต้องการ',
+  'รองรับมือถือ เดสก์ท็อป SEO และความเร็วในการโหลด',
+  'ส่งมอบพร้อมคู่มือใช้งานและดูแลหลังขึ้นระบบจริง',
+];
+
+const stats = [
+  { label: 'โปรเจกต์', value: '40+' },
+  { label: 'วันเริ่มต้น', value: '7' },
+  { label: 'ซัพพอร์ต', value: '24/7' },
+];
+
+const pricingPlans = [
   {
-    title: 'สมเด็จพระกนิษฐาธิราชเจ้า ฯ เชิญขวัญแม่โคสกเจ้า เข้าคืนนา',
-    src: '/assets/akhahas-sri/ac-1.png',
+    price: '฿15,000',
+    title: 'Landing Page',
+    description: 'เหมาะสำหรับธุรกิจที่ต้องการหน้าเว็บขายสินค้า บริการ หรือแคมเปญเดียว',
+    features: ['ออกแบบหน้าแรก', 'รองรับมือถือ', 'ฟอร์มติดต่อ'],
+    highlighted: false,
   },
   {
-    title: 'สมเด็จพระกนิษฐาธิราชเจ้า ฯ เชิญขวัญแม่โคสกเจ้า เข้าคืนนา',
-    src: '/assets/akhahas-sri/ac-2.png',
+    price: '฿35,000',
+    title: 'Business Website',
+    description: 'แพ็กเกจยอดนิยมสำหรับเว็บไซต์บริษัท พร้อมโครงสร้างเนื้อหาครบถ้วน',
+    features: ['สูงสุด 8 หน้า', 'SEO พื้นฐาน', 'เชื่อมต่อ Analytics', 'สอนใช้งานหลังบ้าน'],
+    highlighted: true,
   },
   {
-    title: 'สมเด็จพระกนิษฐาธิราชเจ้า ฯ เชิญขวัญแม่โคสกเจ้า เข้าคืนนา',
-    src: '/assets/akhahas-sri/ac-3.png',
-  },
-  {
-    title: 'สมเด็จพระกนิษฐาธิราชเจ้า ฯ เชิญขวัญแม่โคสกเจ้า เข้าคืนนา',
-    src: '/assets/akhahas-sri/ac-4.png',
+    price: 'เริ่ม ฿79,000',
+    title: 'Web / Mobile App',
+    description: 'สำหรับระบบเฉพาะทาง แอปพลิเคชัน หรือแพลตฟอร์มที่ต้องมี workflow ชัดเจน',
+    features: ['UX/UI Prototype', 'ระบบสมาชิก', 'Dashboard', 'API Integration'],
+    highlighted: false,
   },
 ];
 
-const VIDEO_ITEMS = [
+const noteFeatures = [
   {
-    title: 'เทิดพระเกียรติ | วงโปงลางอรรคฮาตสี การประกวดวงโปงลางกรมพลศึกษา 65',
-    src: 'https://www.youtube.com/watch?v=hZB0LIYLSgM&list=RDhZB0LIYLSgM&start_radio=1',
-    cover: 'https://img.youtube.com/vi/hZB0LIYLSgM/maxresdefault.jpg',
+    icon: 'solar:file-text-bold',
+    title: 'Smart Project Plan',
+    description: 'วาง scope, sitemap, feature list และ timeline ให้เห็นภาพก่อนเริ่มพัฒนา',
   },
   {
-    title: 'วงโปงลางอรรคฮาตสี | การประกวดวงโปงลางกรมพลศึกษา 66',
-    src: 'https://www.youtube.com/watch?v=S1twzNXRbCY&list=RDS1twzNXRbCY&start_radio=1&t=1076s',
-    cover: 'https://img.youtube.com/vi/S1twzNXRbCY/maxresdefault.jpg',
+    icon: 'solar:settings-bold',
+    title: 'Adaptive Development',
+    description: 'ปรับรูปแบบงานได้ตามธุรกิจ ตั้งแต่เว็บองค์กร ร้านค้า ไปจนถึงระบบหลังบ้าน',
   },
   {
-    title: 'เทิดพระเกียรติ - วงโปงลางอรรคฮาตสี | การประกวดวงโปงลางกรมพลศึกษา 67',
-    src: 'https://www.youtube.com/watch?v=gxiq1n3JOT8&list=RDgxiq1n3JOT8&start_radio=1',
-    cover: 'https://img.youtube.com/vi/gxiq1n3JOT8/maxresdefault.jpg',
+    icon: 'solar:like-bold',
+    title: 'Simple & Flexible',
+    description: 'ออกแบบให้ดูแลง่าย ขยายต่อได้ และส่งมอบพร้อมคำแนะนำหลังขึ้นระบบจริง',
   },
-  {
-    title: 'อรรคฮาตสีลาแฟน | วงโปงลางอรรคฮาตสี [Official MV]',
-    src: 'https://www.youtube.com/watch?v=Zr1H0ultIQ8',
-    cover: 'https://img.youtube.com/vi/Zr1H0ultIQ8/maxresdefault.jpg',
-  },
-];
+] as const;
 
-function PlayButton({ small = false }: { small?: boolean }) {
-  const theme = useTheme();
+const tone = {
+  ink: '#171717',
+  muted: '#6f6a62',
+  subtle: '#8d887f',
+  page: '#e8e5df',
+  frame: '#f4f2ee',
+  surface: '#fbfaf7',
+  soft: '#ece8e1',
+  line: '#ded9cf',
+  accent: '#756b60',
+  accentSoft: '#e7ded4',
+};
+
+const sectionSx = {
+  px: { xs: 2.25, md: 7 },
+  py: { xs: 7, md: 9 },
+  bgcolor: tone.frame,
+};
+
+const sectionInnerSx = {
+  mx: 'auto',
+  width: 1,
+  maxWidth: 1040,
+};
+
+function PhonePreview() {
   return (
     <Box
-      component="span"
       sx={{
-        width: small ? 34 : 48,
-        height: small ? 34 : 48,
-        display: 'grid',
-        borderRadius: '50%',
-        color: theme.palette.secondary.main,
-        placeItems: 'center',
-        border: '2px solid rgba(234,215,161,0.88)',
-        backgroundColor: 'rgba(9, 47, 33, 0.42)',
-        boxShadow: '0 18px 40px rgba(0,0,0,0.34), 0 0 20px rgba(217,181,109,0.14)',
-        '&::before': {
-          content: '""',
-          width: 0,
-          height: 0,
-          ml: '3px',
-          borderTop: `${small ? 6 : 8}px solid transparent`,
-          borderBottom: `${small ? 6 : 8}px solid transparent`,
-          borderLeft: `${small ? 9 : 13}px solid currentColor`,
-        },
+        zIndex: 1,
+        p: 1.2,
+        width: { xs: 190, sm: 230 },
+        borderRadius: 4,
+        bgcolor: tone.surface,
+        border: `1px solid ${tone.line}`,
+        boxShadow: '0 24px 60px rgba(46, 42, 36, 0.14)',
       }}
-    />
+    >
+      <Box
+        sx={{
+          p: 1.5,
+          minHeight: { xs: 330, sm: 390 },
+          overflow: 'hidden',
+          borderRadius: 3,
+          bgcolor: '#fffdf9',
+          border: `1px solid ${tone.line}`,
+        }}
+      >
+        <Stack direction="row" alignItems="center" justifyContent="space-between">
+          <Typography sx={{ fontSize: 10, fontWeight: 800 }}>9:19</Typography>
+          <Stack direction="row" spacing={0.5}>
+            <Box sx={{ width: 14, height: 6, borderRadius: 4, bgcolor: '#202020' }} />
+            <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: '#202020' }} />
+          </Stack>
+        </Stack>
+
+        <Box
+          sx={{
+            mt: 2,
+            height: 106,
+            overflow: 'hidden',
+            borderRadius: 2.5,
+            position: 'relative',
+          }}
+        >
+          <Image
+            alt="Website and application preview"
+            src="/assets/images/home/home-chart.webp"
+            ratio="16/9"
+            sx={{ width: 1, height: 1 }}
+          />
+          <Box
+            sx={{
+              inset: 0,
+              position: 'absolute',
+              background: 'linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0.45))',
+            }}
+          />
+          <Typography
+            sx={{
+              left: 12,
+              bottom: 10,
+              zIndex: 1,
+              color: '#fff',
+              fontSize: 13,
+              fontWeight: 800,
+              position: 'absolute',
+            }}
+          >
+            Dashboard
+          </Typography>
+        </Box>
+
+        <Typography sx={{ mt: 2.2, color: '#111', fontSize: 18, fontWeight: 900, lineHeight: 1.1 }}>
+          เว็บไซต์และแอปพร้อมใช้งาน
+        </Typography>
+
+        <Typography sx={{ mt: 1, color: '#666', fontSize: 11, lineHeight: 1.6 }}>
+          วางโครงสร้าง ออกแบบ พัฒนา และเชื่อมต่อระบบให้ธุรกิจเริ่มใช้งานได้จริง
+        </Typography>
+
+        <Stack spacing={1.1} sx={{ mt: 2.4 }}>
+          {['UX/UI Design', 'Web Development', 'Mobile App'].map((item) => (
+            <Stack
+              key={item}
+              direction="row"
+              alignItems="center"
+              spacing={1}
+              sx={{ p: 1, borderRadius: 2, bgcolor: '#f4f4f4' }}
+            >
+              <Box
+                sx={{
+                  width: 22,
+                  height: 22,
+                  display: 'grid',
+                  borderRadius: '50%',
+                  placeItems: 'center',
+                  color: tone.ink,
+                  bgcolor: tone.accentSoft,
+                }}
+              >
+                <Iconify icon="solar:check-circle-bold" width={14} />
+              </Box>
+              <Typography sx={{ color: tone.ink, fontSize: 11, fontWeight: 800 }}>
+                {item}
+              </Typography>
+            </Stack>
+          ))}
+        </Stack>
+      </Box>
+    </Box>
   );
 }
 
 export function HomeView() {
-  const theme = useTheme();
-  const [videoPreviewKey, setVideoPreviewKey] = useState(0);
-  const [selectedVideo, setSelectedVideo] = useState<(typeof VIDEO_ITEMS)[number] | null>(null);
-  const [selectedImage, setSelectedImage] = useState<(typeof ROYAL_IMAGE_ITEMS)[number] | null>(
-    null
-  );
-  const heroCarousel = useCarousel({ loop: true, duration: 80 }, [
-    Fade(),
-    Autoplay({ playOnInit: true, delay: 5000 }),
-  ]);
-
-  const handleCloseVideo = () => {
-    setSelectedVideo(null);
-    setVideoPreviewKey((prev) => prev + 1);
-  };
-
   return (
     <Box
       component="main"
       sx={{
         minHeight: '100vh',
-        color: theme.palette.secondary.main,
-        overflow: 'hidden',
-        bgcolor: theme.palette.primary.main,
+        color: tone.ink,
+        bgcolor: tone.page,
         fontFamily: "'LINE Seed Sans TH', sans-serif",
       }}
     >
-      <Box
-        sx={{
-          minHeight: { xs: 760, md: 1020 },
-          position: 'relative',
-          px: { xs: 2.5, md: 8, lg: 13 },
-          pt: { xs: 14, md: 19 },
-          pb: { xs: 7, md: 6 },
-          bgcolor: '#052518',
-        }}
-      >
-        <Carousel
-          carousel={heroCarousel}
-          sx={{
-            m: 0,
-            inset: 0,
-            width: 1,
-            height: 1,
-            zIndex: 0,
-            position: 'absolute',
-          }}
-          slotProps={{
-            container: { height: 1 },
-            slide: { height: 1 },
-          }}
-        >
-          {HERO_IMAGE.map((src, index) => (
-            <Image
-              key={src}
-              alt={`Akhahas'sri hero ${index + 1}`}
-              src={src}
-              visibleByDefault
-              disablePlaceholder
-              sx={{ width: 1, height: 1 }}
-            />
-          ))}
-        </Carousel>
-
-        <Box
-          sx={{
-            inset: 0,
-            zIndex: 1,
-            position: 'absolute',
-            pointerEvents: 'none',
-            backgroundImage: `
-              linear-gradient(180deg, rgba(9,47,33,0.18) 0%, rgba(9,47,33,0.58) 56%, ${theme.palette.secondary.main} 100%),
-              linear-gradient(90deg, rgba(5,37,24,0.94) 0%, rgba(18,61,43,0.58) 48%, rgba(5,37,24,0.84) 100%),
-              linear-gradient(0deg, rgba(217,181,109,0.08), rgba(217,181,109,0.08))
-            `,
-          }}
-        />
-
-        <Box sx={{ mx: 'auto', maxWidth: 1280, position: 'relative', zIndex: 2 }}>
-          <Box sx={{ maxWidth: 610 }}>
-            <Image
-              alt="Single logo"
-              sx={{ width: 200 }}
-              src={`${CONFIG.assetsDir}/logo/logo-single.svg`}
-            />
-            <Typography
-              sx={{
-                mt: 2,
-                color: theme.palette.secondary.main,
-                fontSize: { xs: 47, sm: 68, md: 82 },
-                fontWeight: 800,
-                lineHeight: 0.92,
-                textTransform: 'uppercase',
-              }}
-            >
-              THAI Verse
-            </Typography>
-            <Typography variant="h1">ไทยเวิร์ส</Typography>
-
-            <Typography variant="h5">Explore the Universe of Thai Culture</Typography>
-          </Box>
-
-          <Stack
-            spacing={1.35}
-            sx={{
-              top: { xs: 152, md: 170 },
-              right: 0,
-              width: 120,
-              display: { xs: 'none', md: 'flex' },
-              position: 'absolute',
-              alignItems: 'flex-end',
-            }}
-          >
-            {HERO_IMAGE.map((_, index) => (
-              <Stack
-                key={index}
-                direction="row"
-                spacing={1.3}
-                alignItems="center"
-                sx={{
-                  color:
-                    index === heroCarousel.dots.selectedIndex
-                      ? theme.palette.secondary.main
-                      : 'rgba(246,237,219,0.48)',
-                  cursor: 'pointer',
-                }}
-                onClick={() => heroCarousel.dots.onClickDot(index)}
-              >
-                <Typography sx={{ fontSize: 12, fontWeight: 800 }}>
-                  {String(index + 1).padStart(2, '0')}
-                </Typography>
-                <Box
-                  sx={{
-                    height: 2,
-                    width: index === heroCarousel.dots.selectedIndex ? 78 : 18,
-                    bgcolor:
-                      index === heroCarousel.dots.selectedIndex
-                        ? theme.palette.secondary.main
-                        : 'rgba(234,215,161,0.28)',
-                  }}
-                />
-              </Stack>
-            ))}
-          </Stack>
-
-          <Stack
-            direction={{ xs: 'column', md: 'row' }}
-            spacing={{ xs: 3, md: 5 }}
-            sx={{
-              mt: { xs: 19, md: 23 },
-              pt: 3,
-              borderBottom: '1px solid rgba(234,215,161,0.26)',
-              pb: 4,
-            }}
-          >
-            {highlights.map((item) => (
-              <Stack key={item.title} direction="row" spacing={2.2} sx={{ flex: 1 }}>
-                <Typography
-                  sx={{
-                    color: theme.palette.secondary.main,
-                    fontSize: 24,
-                    fontWeight: 800,
-                    opacity: 0.78,
-                    minWidth: 34,
-                    lineHeight: 1,
-                  }}
-                >
-                  {item.icon}
-                </Typography>
-                <Box>
-                  <Typography variant="h6">{item.title}</Typography>
-                  <Typography variant="body1" sx={{ mt: 0.8, color: 'rgba(246,237,219,0.58)' }}>
-                    {item.body}
-                  </Typography>
-                </Box>
-              </Stack>
-            ))}
-          </Stack>
-        </Box>
-      </Box>
-
-      <Box
-        sx={{
-          px: { xs: 2.5, md: 8, lg: 13 },
-          py: { xs: 7, md: 11 },
-          // color: theme.palette.secondary.main,
-          backgroundImage: `
-            radial-gradient(circle at 50% 8%,  ${theme.palette.secondary.main} 0,  ${theme.palette.secondary.main} 10%),
-            linear-gradient(180deg, ${theme.palette.secondary.main} 0, #034420 92px, #012d1a 100%)
-          `,
-        }}
-      >
-        <Box sx={{ textAlign: 'center' }}>
-          <Box
-            component="img"
-            src={MEMORIAL_IMAGE}
-            alt="Lotus memorial collage"
-            sx={{
-              width: '400px',
-              height: '100%',
-              display: 'block',
-              mx: 'auto',
-              filter: 'drop-shadow(0 28px 55px rgba(9,47,33,0.12))',
-            }}
-          />
-
-          <Stack sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mt: 4 }}>
-            <Box sx={{ width: '50%' }}>
-              <Typography
-                variant="h3"
-                color="primary"
-                sx={{
-                  fontStyle: 'italic',
-                }}
-              >
-                ปางเธอท่านผทม เสด็จชมเสวยสวรรค์ อาภาผ่องเพ็ญจันทร์ พระเธอนั้นนิทราลัย
-                เสด็จมาเป็นแก้วตา ให้ประชาได้ชื่นใจ เสด็จสู่สุราลัย ดังดวงใจจะรานรอน
-              </Typography>
-
-              <Typography
-                variant="h4"
-                color="primary"
-                sx={{
-                  fontStyle: 'italic',
-                  mt: 3,
-                }}
-              >
-                &quot;รจนาอาลัย : รัฐพล อินโพนทัน&quot;
-              </Typography>
-            </Box>
-          </Stack>
-
-          <Box
-            sx={{
-              mt: 3,
-              mx: 'auto',
-              width: 180,
-              height: 4,
-              bgcolor: theme.palette.secondary.main,
-              opacity: 0.72,
-            }}
-          />
-        </Box>
-      </Box>
-
-      <Box sx={{ bgcolor: theme.palette.secondary.main, px: { xs: 2.5, md: 8, lg: 13 } }}>
-        <ThailandMap />
-      </Box>
-
-      <Box
-        sx={{
-          px: { xs: 2.5, md: 8, lg: 13 },
-          py: { xs: 7, md: 10 },
-          minHeight: 800,
-          backgroundImage: `
-            linear-gradient(0deg, ${theme.palette.primary.main} 10%, rgba(9,47,33,0.64) 48%, ${theme.palette.secondary.main} 100%),
-            linear-gradient(0deg, rgba(217,181,109,0.1), rgba(217,181,109,0.1)),
-            url(${SCENES_1_IMAGE})
-          `,
-          backgroundSize: 'cover',
-          backgroundPosition: '100% 20%',
-        }}
-      >
-        <Box sx={{ mx: 'auto', maxWidth: 1000, textAlign: 'center' }}>
-          <Typography variant="h3" color="primary">
-            สมเด็จพระกนิษฐาธิราชเจ้า ฯ เชิญขวัญแม่โคสกเจ้า เข้าคืนนา
-          </Typography>
-          <Typography variant="subtitle1" color="primary" sx={{ mt: 1.4, textAlign: 'center' }}>
-            พระเทพนารี สองมือนี้ข้าถวาย มืออันเคยกรำหนักปักกล้าทำนามิวาย ขอฟ้อนถวายพระเทพนารี
-            อิตถีรัตนา ข้าหมายยิ่งว่า เทิดพระทรงศรี ขอได้สดับขับกล่อมพาที ลำนำชาวนา
-            เถิดพระทูลพระหม่อม เอย พระยอดกัลยา ข้า บ่มีสิ่งสูงค่าถวาย หากบ่ควรค่าใด
-            ขอทรงอภัยพระยอดกัลยา ธ แสนประเสริฐ ขอสำราญเถิด พระพุทธเจ้าข้า เหล่ากสิกรจักฟ้อนถวยพร
-            ไหว้ว่า ขอพระกนิษฐา จงยศยิ่งยงทรงชัย อนตายสังอันใด อย่าได้กายใกล้ พระทูลกระหม่อม เอย
-          </Typography>
-
-          <Box
-            sx={{
-              mt: 7,
-              display: 'grid',
-              gap: { xs: 2.2, sm: 2.5 },
-              gridTemplateColumns: {
-                xs: 'repeat(2, minmax(0, 1fr))',
-                md: 'repeat(4, minmax(0, 1fr))',
-              },
-            }}
-          >
-            {ROYAL_IMAGE_ITEMS.map((image) => (
-              <Box
-                key={image.src}
-                className="royal-image-button"
-                component="button"
-                type="button"
-                aria-label={`ดูภาพ ${image.title}`}
-                onClick={() => setSelectedImage(image)}
-                sx={{
-                  p: 0,
-                  m: 0,
-                  border: 0,
-                  width: 1,
-                  display: 'block',
-                  cursor: 'pointer',
-                  overflow: 'hidden',
-                  borderRadius: 1,
-                  bgcolor: 'transparent',
-                  position: 'relative',
-                  '&::after': {
-                    inset: 0,
-                    opacity: 0,
-                    content: '""',
-                    position: 'absolute',
-                    transition: 'opacity 180ms ease',
-                    background:
-                      'linear-gradient(180deg, rgba(5,37,24,0.02) 0%, rgba(5,37,24,0.46) 100%)',
-                  },
-                  '&:hover::after, &:focus-visible::after': {
-                    opacity: 1,
-                  },
-                  '&:focus-visible': {
-                    outline: `2px solid ${theme.palette.secondary.main}`,
-                    outlineOffset: 4,
-                  },
-                  '&:hover .royal-image-preview-icon, &:focus-visible .royal-image-preview-icon': {
-                    opacity: 1,
-                    transform: 'translate(-50%, -50%) scale(1)',
-                  },
-                }}
-              >
-                <Image
-                  alt={image.title}
-                  src={image.src}
-                  ratio="3/4"
-                  sx={{
-                    width: 1,
-                    transition: 'transform 220ms ease',
-                    '.royal-image-button:hover > &, .royal-image-button:focus-visible > &': {
-                      transform: 'scale(1.04)',
-                    },
-                  }}
-                />
-                <Box
-                  className="royal-image-preview-icon"
-                  sx={{
-                    top: '50%',
-                    left: '50%',
-                    zIndex: 1,
-                    width: 52,
-                    height: 52,
-                    opacity: 0,
-                    display: 'grid',
-                    borderRadius: '50%',
-                    placeItems: 'center',
-                    position: 'absolute',
-                    color: theme.palette.secondary.main,
-                    transform: 'translate(-50%, -50%) scale(0.92)',
-                    transition: 'opacity 180ms ease, transform 180ms ease',
-                    bgcolor: 'rgba(9, 47, 33, 0.64)',
-                    border: '1px solid rgba(234,215,161,0.58)',
-                    boxShadow: '0 18px 40px rgba(0,0,0,0.34)',
-                  }}
-                >
-                  <Iconify icon="solar:eye-bold" width={24} />
-                </Box>
-              </Box>
-            ))}
-          </Box>
-        </Box>
-      </Box>
-      <Box
-        sx={{
-          px: { xs: 2.5, md: 8, lg: 13 },
-          py: { xs: 8, md: 12 },
-          minHeight: 670,
-          backgroundImage: `
-            linear-gradient(180deg, ${theme.palette.primary.main} 0%, rgba(9,47,33,0.64) 32%, ${theme.palette.primary.main} 100%),
-            linear-gradient(90deg, rgba(5,37,24,0.94) 0%, rgba(18,61,43,0.48) 52%, rgba(5,37,24,0.9) 100%),
-            linear-gradient(0deg, rgba(217,181,109,0.1), rgba(217,181,109,0.1)),
-            url(${KRU_IMAGE})
-          `,
-          backgroundSize: 'cover',
-          backgroundPosition: '100% 100%',
-        }}
-      >
-        {/* <Stack sx={{ display: 'flex', textAlign: 'center', mb: 2 }}>
-          <Typography variant="h3">ธีรวัฒน์ เจียงคำ</Typography>
-        </Stack> */}
+      <Box sx={{ px: { xs: 1.5, md: '5%' }, py: { xs: 2, md: '5%' } }}>
         <Box
           sx={{
             mx: 'auto',
-            gap: { xs: 6, md: 5 },
-            maxWidth: 1280,
-            display: 'grid',
-            alignItems: 'center',
-            gridTemplateColumns: { xs: '1fr', md: '0.88fr 1.12fr' },
+            maxWidth: '100%',
+            overflow: 'hidden',
+            borderRadius: { xs: 3, md: 4 },
+            bgcolor: tone.frame,
+            border: '8px solid rgba(255,255,255,0.7)',
+            boxShadow: '0 34px 100px rgba(46, 42, 36, 0.1)',
           }}
         >
           <Box
             sx={{
-              gap: 2,
-              display: 'grid',
-              gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' },
+              minHeight: { xs: 720, md: 760 },
+              position: 'relative',
+              px: { xs: 2, md: 5 },
+              pt: { xs: 2, md: 7 },
+              pb: { xs: 2, md: 5 },
+              bgcolor: tone.frame,
+              backgroundImage: `
+                linear-gradient(90deg, rgba(45,40,34,0.06) 1px, transparent 1px),
+                linear-gradient(180deg, rgba(45,40,34,0.06) 1px, transparent 1px)
+              `,
+              backgroundSize: { xs: '72px 72px', md: '120px 120px' },
             }}
           >
+            <CodeForCatHeader sticky />
+
+            <Box sx={{ mx: 'auto', mt: { xs: 7, md: 10 }, maxWidth: 790, textAlign: 'center' }}>
+              <Stack
+                direction="row"
+                alignItems="center"
+                justifyContent="center"
+                spacing={0.6}
+                sx={{ mb: 2 }}
+              >
+                <Box
+                  sx={{
+                    px: 1,
+                    py: 0.35,
+                    color: '#fff',
+                    borderRadius: 999,
+                    bgcolor: tone.ink,
+                    fontSize: 11,
+                    fontWeight: 800,
+                  }}
+                >
+                  New
+                </Box>
+                <Typography sx={{ color: tone.muted, fontSize: 12, fontWeight: 700 }}>
+                  รับทำเว็บไซต์และแอปพลิเคชันแบบครบวงจร
+                </Typography>
+                <Iconify icon="solar:forward-bold" width={14} />
+              </Stack>
+
+              <Typography
+                component="h1"
+                sx={{
+                  mx: 'auto',
+                  color: tone.ink,
+                  maxWidth: 720,
+                  fontSize: { xs: 46, sm: 64, md: 78 },
+                  fontWeight: 950,
+                  lineHeight: 0.98,
+                  letterSpacing: 0,
+                }}
+              >
+                Build your website and application with{' '}
+                <Box
+                  component="span"
+                  sx={{
+                    mt: 2,
+                    p: 2,
+                    color: tone.accent,
+                    display: 'inline-block',
+                    borderRadius: 999,
+                    bgcolor: tone.accentSoft,
+                    boxShadow: 'inset 0 0 0 2px rgba(117,107,96,0.1)',
+                    fontSize: { xs: 32, md: 48 },
+                  }}
+                >
+                  CODE FOR CAT
+                </Box>
+              </Typography>
+
+              <Typography
+                sx={{
+                  mx: 'auto',
+                  mt: 2,
+                  color: tone.muted,
+                  maxWidth: 560,
+                  fontSize: { xs: 14, md: 15 },
+                  lineHeight: 1.65,
+                }}
+              >
+                เราช่วยเปลี่ยนไอเดียธุรกิจให้เป็นเว็บไซต์ แอปพลิเคชัน และระบบจัดการที่สวย ใช้งานง่าย
+                และพร้อมเติบโตไปกับทีมของคุณ
+              </Typography>
+
+              <Stack
+                direction="row"
+                justifyContent="center"
+                spacing={1.2}
+                sx={{ mt: 4, flexWrap: 'wrap', rowGap: 1.2 }}
+              >
+                <Button
+                  href="/contact-us"
+                  variant="contained"
+                  startIcon={<Iconify icon="solar:flag-bold" />}
+                  sx={{
+                    px: 2.2,
+                    py: 1.1,
+                    color: '#fff',
+                    borderRadius: 999,
+                    bgcolor: tone.ink,
+                    fontSize: 12,
+                    fontWeight: 800,
+                    boxShadow: '0 12px 24px rgba(0,0,0,0.16)',
+                    '&:hover': { bgcolor: '#000' },
+                  }}
+                >
+                  ปรึกษาฟรี
+                </Button>
+                <Button
+                  variant="contained"
+                  startIcon={<Iconify icon="solar:file-text-bold" />}
+                  sx={{
+                    px: 2.2,
+                    py: 1.1,
+                    color: tone.ink,
+                    borderRadius: 999,
+                    bgcolor: '#fff',
+                    fontSize: 12,
+                    fontWeight: 800,
+                    boxShadow: '0 12px 24px rgba(46,42,36,0.08)',
+                    '&:hover': { bgcolor: '#fff' },
+                  }}
+                >
+                  ดูผลงาน
+                </Button>
+              </Stack>
+            </Box>
+
             <Box
               sx={{
-                p: 1,
-                borderRadius: 1.5,
-                bgcolor: 'rgba(234,215,161,0.1)',
-                border: '1px solid rgba(234,215,161,0.22)',
-                boxShadow: '0 24px 60px rgba(0,0,0,0.22)',
+                mt: { xs: 8, md: 10 },
+                mx: { xs: -2, md: -7 },
+                py: 4,
+                borderTop: `1px solid ${tone.line}`,
+                borderBottom: `1px solid ${tone.line}`,
               }}
             >
-              <Box
-                sx={{
-                  width: 1,
-                  aspectRatio: '16 / 9',
-                  height: { xs: 200, md: 350 },
-                  overflow: 'hidden',
-                  borderRadius: 1,
-                  bgcolor: '#052518',
-                  '& .react-player__preview': {
-                    borderRadius: 1,
-                  },
-                  '& .react-player__shadow': {
-                    bgcolor: 'rgba(9, 47, 33, 0.54)',
-                    boxShadow: '0 18px 40px rgba(0,0,0,0.34)',
-                  },
-                }}
+              <Stack
+                direction="row"
+                justifyContent="center"
+                alignItems="center"
+                spacing={{ xs: 3, md: 8 }}
+                sx={{ color: tone.subtle, flexWrap: 'wrap', rowGap: 2 }}
               >
-                <ReactPlayer
-                  src="https://www.youtube.com/watch?v=76jSHW8-Sug&t=5s"
-                  light="https://img.youtube.com/vi/76jSHW8-Sug/maxresdefault.jpg"
-                  width="100%"
-                  height="100%"
-                  playIcon={<PlayButton small />}
-                  // previewAriaLabel={`ดูวิดีโอ ${video.title}`}
-                  // onClickPreview={() => setSelectedVideo(video)}
-                />
-              </Box>
+                {partnerItems.map((item, index) => (
+                  <Typography
+                    key={item}
+                    sx={{
+                      px: index === 1 ? 4 : 0,
+                      py: index === 1 ? 1.5 : 0,
+                      color: index === 1 ? tone.ink : 'inherit',
+                      borderRadius: index === 1 ? 2 : 0,
+                      bgcolor: index === 1 ? tone.surface : 'transparent',
+                      boxShadow: index === 1 ? '0 14px 30px rgba(46,42,36,0.08)' : 'none',
+                      fontSize: { xs: 16, md: 21 },
+                      fontWeight: 950,
+                    }}
+                  >
+                    {item}
+                  </Typography>
+                ))}
+              </Stack>
             </Box>
-          </Box>
 
-          <Box>
-            <Typography
-              component="h2"
-              sx={{
-                color: theme.palette.secondary.main,
-                maxWidth: 520,
-                fontSize: { xs: 42, sm: 58, md: 68 },
-                fontWeight: 800,
-                lineHeight: 1.2,
-                textTransform: 'uppercase',
-              }}
-            >
-              ธีรวัฒน์ เจียงคำ
-            </Typography>
-
-            <Typography
-              sx={{
-                mt: 4,
-                maxWidth: 430,
-                color: theme.palette.secondary.main,
-                lineHeight: 1.75,
-              }}
-            >
-              การออกแบบไม่ควรยึดติดกับรูปแบบเดิมจนเกินไป
-              จนไม่สัมพันธ์กับความต้องการใช้งานของคนรุ่นใหม่
-              แนวคิดที่ดีคือการปล่อยให้วัสดุมีความเป็นตัวของมันเองมากที่สุด
-              เพื่อให้สามารถปรับเปลี่ยนไปเป็นอะไรก็ได้ที่ตอบสนองการใช้งานและสภาพปัจจุบันของผู้ใช้
-              ถ้าเรายึดติดกับการทำให้สิ่งของมีลักษณะโบราณมากเกินไป มันก็จะอยู่ได้แค่ในพิพิธภัณฑ์
-              ไม่ได้ถูกนำไปใช้งานจริง เมื่อสิ่งของไม่ถูกนำไปใช้งาน มันก็ไม่สามารถอยู่ร่วมกับสังคมได้
-            </Typography>
-
-            <Typography
-              variant="h4"
-              sx={{
-                fontStyle: 'italic',
-                mt: 3,
-              }}
-            >
-              &quot;ธีรวัฒน์ เจียงคำ&quot;
-            </Typography>
-            <Typography
-              variant="caption"
-              sx={{
-                fontStyle: 'italic',
-                mt: 3,
-              }}
-            >
-              ที่มา https://soundisan.com/news/ttaste-khamriang/ และ The Isaan Record Podcast
-            </Typography>
-          </Box>
-        </Box>
-      </Box>
-
-      <Box
-        sx={{
-          px: { xs: 2.5, md: 8, lg: 13 },
-          py: { xs: 8, md: 12 },
-          minHeight: 800,
-          backgroundImage: `
-            linear-gradient(180deg, ${theme.palette.primary.main} 0%, rgba(9,47,33,0.64) 32%, ${theme.palette.primary.main} 100%),
-            linear-gradient(90deg, rgba(5,37,24,0.94) 0%, rgba(18,61,43,0.48) 52%, rgba(5,37,24,0.9) 100%),
-            linear-gradient(0deg, rgba(217,181,109,0.1), rgba(217,181,109,0.1)),
-            url(${SCENES_IMAGE})
-          `,
-          backgroundSize: 'cover',
-          backgroundPosition: '100% 100%',
-        }}
-      >
-        <Box
-          sx={{
-            mx: 'auto',
-            gap: { xs: 6, md: 5 },
-            maxWidth: 1280,
-            display: 'grid',
-            alignItems: 'center',
-            gridTemplateColumns: { xs: '1fr', md: '0.88fr 1.12fr' },
-          }}
-        >
-          <Box>
-            <Typography
-              component="h2"
-              sx={{
-                color: theme.palette.secondary.main,
-                maxWidth: 520,
-                fontSize: { xs: 42, sm: 58, md: 68 },
-                fontWeight: 800,
-                lineHeight: 1.2,
-                textTransform: 'uppercase',
-              }}
-            >
-              ศิลปะ ส่องทาง ให้แก่กัน เสมอ
-            </Typography>
-
-            <Stack direction="row" spacing={2} alignItems="center" sx={{ mt: 4.5 }}>
-              <PlayButton small />
-              <Typography variant="h5" sx={{ fontWeight: 800, textTransform: 'uppercase' }}>
-                รับชมวิดีโอ
+            <Stack alignItems="center" sx={{ mt: 5.5, textAlign: 'center' }}>
+              <Image
+                src="/assets/code-for-cat/logo.png"
+                alt="Logo"
+                ratio="1/1"
+                sx={{ width: { xs: 50, md: 100 }, height: { xs: 50, md: 100 } }}
+              />
+              <Typography sx={{ mt: 1.4, color: tone.ink, fontSize: 18, fontWeight: 900 }}>
+                Quick and Easy Launch
+              </Typography>
+              <Typography sx={{ mt: 0.7, color: tone.muted, maxWidth: 480, fontSize: 13 }}>
+                &quot;เริ่มจากโจทย์ธุรกิจของคุณ แล้วเราออกแบบเส้นทางให้ไปถึงระบบที่ใช้ได้จริง&quot;
               </Typography>
             </Stack>
-
-            <Typography
-              sx={{
-                mt: 4,
-                maxWidth: 430,
-                color: theme.palette.secondary.main,
-                fontSize: 13,
-                lineHeight: 1.75,
-              }}
-            >
-              อันว่า การใดแท้ ธรรมดาดีชอบ ฝูงข้าตกแต่งถ้วน อันล้วนที่ควร คุส่วนสมเสมอหน้า
-              เป็นไปในโลก ผลาผลแผ่ก้วง กวมพื้นแผ่นไตร ค้อมว่าสาธุการไหว้ แล้วนบนิ้วยอลง
-              กราบหว่างบูฮมฮอย บ่อนมรคาเพียงฮาบ การอันสมกระบวนเบื้อง ทั้งผองปองประโยชน์
-              ตางให้โลกเล่าเฮื้องภายซ้อยซาเซ็ง
-            </Typography>
           </Box>
 
-          <Box
-            sx={{
-              gap: 2,
-              display: 'grid',
-              gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' },
-            }}
-          >
-            {VIDEO_ITEMS.map((video, index) => (
-              <Box
-                key={`${video.title}-${index}`}
+          <Box id="services" sx={{ ...sectionSx, textAlign: 'center' }}>
+            <Typography
+              sx={{
+                mx: 'auto',
+                px: 1.5,
+                py: 0.6,
+                width: 'fit-content',
+                color: tone.muted,
+                borderRadius: 999,
+                bgcolor: tone.surface,
+                fontSize: 12,
+                fontWeight: 800,
+              }}
+            >
+              Our Services
+            </Typography>
+
+            <Typography
+              component="h2"
+              sx={{ mt: 2, color: tone.ink, fontSize: { xs: 32, md: 42 }, fontWeight: 950 }}
+            >
+              ครบตั้งแต่ดีไซน์จนถึงดูแลหลังบ้าน
+            </Typography>
+            <Typography sx={{ mx: 'auto', mt: 1, color: tone.muted, maxWidth: 430, fontSize: 14 }}>
+              เลือกบริการที่เหมาะกับธุรกิจของคุณ จะเริ่มจากเว็บไซต์หน้าเดียวหรือระบบเต็มรูปแบบก็ได้
+            </Typography>
+
+            <Box
+              sx={{
+                mx: 'auto',
+                mt: 4,
+                width: 1,
+                maxWidth: { xs: 1, md: 'fit-content' },
+                overflowX: 'auto',
+                scrollbarWidth: 'none',
+                '&::-webkit-scrollbar': { display: 'none' },
+              }}
+            >
+              <Stack
+                direction="row"
+                justifyContent={{ xs: 'flex-start', md: 'center' }}
                 sx={{
-                  p: 1,
-                  borderRadius: 1.5,
-                  bgcolor: 'rgba(234,215,161,0.1)',
-                  border: '1px solid rgba(234,215,161,0.22)',
-                  boxShadow: '0 24px 60px rgba(0,0,0,0.22)',
+                  mx: { xs: 0, md: 'auto' },
+                  p: 0.6,
+                  width: { xs: 'max-content', md: 'fit-content' },
+                  minWidth: { xs: '100%', md: 'auto' },
+                  borderRadius: 999,
+                  bgcolor: tone.soft,
+                }}
+              >
+                {tabs.map((tab, index) => (
+                  <Box
+                    key={tab}
+                    sx={{
+                      px: { xs: 2, sm: 2.2 },
+                      py: 1,
+                      color: tone.ink,
+                      flexShrink: 0,
+                      whiteSpace: 'nowrap',
+                      borderRadius: 999,
+                      bgcolor: index === 2 ? tone.surface : 'transparent',
+                      boxShadow: index === 2 ? '0 10px 20px rgba(46,42,36,0.08)' : 'none',
+                      fontSize: 12,
+                      fontWeight: 800,
+                    }}
+                  >
+                    {tab}
+                  </Box>
+                ))}
+              </Stack>
+            </Box>
+            <Box
+              sx={{
+                mt: 4,
+                mx: 'auto',
+                p: { xs: 2.5, md: 5 },
+                maxWidth: 1040,
+                overflow: 'hidden',
+                borderRadius: 2,
+                textAlign: 'left',
+                bgcolor: tone.surface,
+                border: `1px solid ${tone.line}`,
+                boxShadow: '0 18px 52px rgba(46,42,36,0.08)',
+              }}
+            >
+              <Box
+                sx={{
+                  gap: { xs: 4, md: 5 },
+                  display: 'grid',
+                  alignItems: 'center',
+                  gridTemplateColumns: { xs: '1fr', md: '0.9fr 1.1fr' },
+                }}
+              >
+                <Box>
+                  <Image
+                    src="/assets/code-for-cat/logo.png"
+                    alt="Logo"
+                    ratio="1/1"
+                    sx={{ width: { xs: 50, md: 60 }, height: { xs: 50, md: 60 } }}
+                  />
+                  <Typography
+                    sx={{ mt: 1.6, color: tone.ink, fontSize: { xs: 28, md: 34 }, fontWeight: 950 }}
+                  >
+                    Digital Products That Feel Like You
+                  </Typography>
+
+                  <Stack spacing={1.7} sx={{ mt: 3 }}>
+                    {featureItems.map((item) => (
+                      <Stack key={item} direction="row" spacing={1.2} alignItems="center">
+                        <Iconify icon="solar:check-circle-bold" width={18} color={tone.accent} />
+                        <Typography sx={{ color: tone.ink, fontSize: 14, fontWeight: 750 }}>
+                          {item}
+                        </Typography>
+                      </Stack>
+                    ))}
+                  </Stack>
+
+                  <Box
+                    sx={{
+                      mt: 4,
+                      display: 'grid',
+                      gap: 1.4,
+                      gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+                    }}
+                  >
+                    {stats.map((stat) => (
+                      <Box key={stat.label} sx={{ p: 1.5, borderRadius: 2, bgcolor: tone.soft }}>
+                        <Typography sx={{ color: tone.ink, fontSize: 24, fontWeight: 950 }}>
+                          {stat.value}
+                        </Typography>
+                        <Typography sx={{ color: tone.muted, fontSize: 11, fontWeight: 800 }}>
+                          {stat.label}
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Box>
+                </Box>
+
+                <Stack
+                  direction="row"
+                  justifyContent="center"
+                  alignItems="center"
+                  sx={{ position: 'relative' }}
+                >
+                  <PhonePreview />
+                  <Box
+                    sx={{
+                      zIndex: 0,
+                      right: 120,
+                      position: 'absolute',
+                      mr: { xs: -4, md: -7 },
+                      width: { xs: 150, sm: 180 },
+                      height: { xs: 245, sm: 300 },
+                      borderRadius: 4,
+                      opacity: 0.44,
+                      bgcolor: tone.soft,
+                      filter: 'blur(1px)',
+                      border: `1px solid ${tone.line}`,
+                    }}
+                  />
+                </Stack>
+              </Box>
+            </Box>
+          </Box>
+
+          <Box id="clients" sx={{ ...sectionSx, bgcolor: tone.surface }}>
+            <Box sx={sectionInnerSx}>
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography
+                  sx={{
+                    mx: 'auto',
+                    px: 1.4,
+                    py: 0.6,
+                    width: 'fit-content',
+                    color: tone.muted,
+                    borderRadius: 999,
+                    bgcolor: tone.soft,
+                    fontSize: 12,
+                    fontWeight: 800,
+                  }}
+                >
+                  Our Clients
+                </Typography>
+                <Typography
+                  sx={{ mt: 2, color: tone.ink, fontSize: { xs: 30, md: 42 }, fontWeight: 950 }}
+                >
+                  ลูกค้าของเรา
+                </Typography>
+              </Box>
+
+              <Box
+                sx={{
+                  mt: 4,
+                  display: 'grid',
+                  gap: { xs: 1.5, md: 2 },
+                  gridTemplateColumns: {
+                    xs: 'repeat(2, minmax(0, 1fr))',
+                    sm: 'repeat(3, minmax(0, 1fr))',
+                    md: 'repeat(6, minmax(0, 1fr))',
+                  },
+                }}
+              >
+                {clientItems.map((client) => (
+                  <Box
+                    key={client.name}
+                    sx={{
+                      p: { xs: 2, md: 2.5 },
+                      height: { xs: 104, md: 118 },
+                      display: 'grid',
+                      borderRadius: 2,
+                      placeItems: 'center',
+                      bgcolor: tone.frame,
+                      border: `1px solid ${tone.line}`,
+                      boxShadow: '0 14px 34px rgba(46,42,36,0.05)',
+                    }}
+                  >
+                    <Box
+                      component="img"
+                      alt={client.name}
+                      src={client.logo}
+                      sx={{
+                        width: 1,
+                        maxWidth: 112,
+                        maxHeight: 46,
+                        objectFit: 'contain',
+                        opacity: 0.66,
+                        filter:
+                          'grayscale(1) sepia(0.12) saturate(0.25) contrast(0.86) brightness(0.88)',
+                        mixBlendMode: 'luminosity',
+                      }}
+                    />
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+          </Box>
+
+          <Box id="pricing" sx={{ ...sectionSx, bgcolor: tone.surface }}>
+            <Box sx={sectionInnerSx}>
+              <Typography sx={{ color: tone.ink, fontSize: { xs: 30, md: 42 }, fontWeight: 950 }}>
+                Choose your pricing plan
+              </Typography>
+              <Typography
+                sx={{ mt: 1, color: tone.muted, maxWidth: 600, fontSize: 14, lineHeight: 1.7 }}
+              >
+                เลือกแพ็กเกจที่เหมาะกับเป้าหมายของคุณ
+                เริ่มจากหน้าเว็บไซต์ขนาดเล็กไปจนถึงเว็บแอปและระบบเฉพาะทาง
+              </Typography>
+
+              <Box
+                sx={{
+                  mt: 4,
+                  display: 'grid',
+                  gap: { xs: 2, md: 2.5 },
+                  alignItems: 'stretch',
+                  gridTemplateColumns: { xs: '1fr', md: 'repeat(3, minmax(0, 1fr))' },
+                }}
+              >
+                {pricingPlans.map((plan) => (
+                  <Box
+                    key={plan.title}
+                    sx={{
+                      p: { xs: 2.5, md: 3 },
+                      color: plan.highlighted ? tone.ink : '#fff',
+                      minHeight: 260,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      borderRadius: 2,
+                      bgcolor: plan.highlighted ? tone.surface : tone.ink,
+                      border: plan.highlighted ? `1px solid ${tone.line}` : `1px solid ${tone.ink}`,
+                      boxShadow: plan.highlighted
+                        ? '0 18px 52px rgba(46,42,36,0.12)'
+                        : '0 14px 34px rgba(46,42,36,0.1)',
+                    }}
+                  >
+                    <Typography sx={{ fontSize: { xs: 26, md: 30 }, fontWeight: 950 }}>
+                      {plan.price}
+                    </Typography>
+                    <Typography sx={{ mt: 1, fontSize: 15, fontWeight: 900 }}>
+                      {plan.title}
+                    </Typography>
+                    <Typography
+                      sx={{
+                        mt: 1,
+                        color: plan.highlighted ? tone.muted : 'rgba(255,255,255,0.68)',
+                        fontSize: 12,
+                        lineHeight: 1.6,
+                      }}
+                    >
+                      {plan.description}
+                    </Typography>
+
+                    <Stack spacing={1} sx={{ mt: 2.4 }}>
+                      {plan.features.map((feature) => (
+                        <Stack key={feature} direction="row" spacing={1} alignItems="center">
+                          <Iconify
+                            icon="solar:check-circle-bold"
+                            width={15}
+                            color={plan.highlighted ? tone.accent : '#fff'}
+                          />
+                          <Typography sx={{ fontSize: 12, fontWeight: 750 }}>{feature}</Typography>
+                        </Stack>
+                      ))}
+                    </Stack>
+
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      sx={{
+                        mt: 'auto',
+                        py: 1,
+                        color: plan.highlighted ? '#fff' : tone.ink,
+                        borderRadius: 999,
+                        bgcolor: plan.highlighted ? tone.ink : tone.surface,
+                        fontSize: 12,
+                        fontWeight: 900,
+                        boxShadow: 'none',
+                        '&:hover': {
+                          bgcolor: plan.highlighted ? '#000' : tone.soft,
+                          boxShadow: 'none',
+                        },
+                      }}
+                    >
+                      {plan.highlighted ? 'เริ่มโปรเจกต์' : 'สอบถามแพ็กเกจ'}
+                    </Button>
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+          </Box>
+
+          <Box id="workflow" sx={sectionSx}>
+            <Box sx={sectionInnerSx}>
+              <Typography
+                sx={{
+                  px: 1.4,
+                  py: 0.6,
+                  width: 'fit-content',
+                  color: tone.muted,
+                  borderRadius: 999,
+                  bgcolor: tone.surface,
+                  fontSize: 12,
+                  fontWeight: 800,
+                }}
+              >
+                Smart workflow
+              </Typography>
+              <Typography
+                sx={{ mt: 2, color: tone.ink, fontSize: { xs: 30, md: 42 }, fontWeight: 950 }}
+              >
+                Smarter Projects. One Simple Space to Capture, Organize & Remember.
+              </Typography>
+              <Typography
+                sx={{ mt: 1, color: tone.muted, maxWidth: 720, fontSize: 14, lineHeight: 1.7 }}
+              >
+                เราจัดทุกอย่างให้เป็นขั้นตอนชัดเจน ตั้งแต่สรุป requirement, wireframe, design,
+                development, testing และ launch เพื่อให้คุณเห็นความคืบหน้าได้ตลอดทาง
+              </Typography>
+
+              <Box
+                sx={{
+                  mt: 5,
+                  display: 'grid',
+                  gap: { xs: 4, md: 6 },
+                  alignItems: 'center',
+                  gridTemplateColumns: { xs: '1fr', md: '0.9fr 1.1fr' },
                 }}
               >
                 <Box
                   sx={{
-                    width: 1,
-                    aspectRatio: '16 / 9',
-                    overflow: 'hidden',
-                    borderRadius: 1,
-                    bgcolor: '#052518',
-                    '& .react-player__preview': {
-                      borderRadius: 1,
-                    },
-                    '& .react-player__shadow': {
-                      bgcolor: 'rgba(9, 47, 33, 0.54)',
-                      boxShadow: '0 18px 40px rgba(0,0,0,0.34)',
-                    },
+                    p: 4,
+                    minHeight: 300,
+                    display: 'grid',
+                    borderRadius: 2,
+                    placeItems: 'center',
+                    bgcolor: tone.surface,
+                    border: `1px solid ${tone.line}`,
+                    boxShadow: '0 18px 48px rgba(46,42,36,0.06)',
                   }}
                 >
-                  <ReactPlayer
-                    key={`${video.title}-${videoPreviewKey}`}
-                    src={video.src}
-                    light={video.cover}
-                    width="100%"
-                    height="100%"
-                    playIcon={<PlayButton small />}
-                    previewAriaLabel={`ดูวิดีโอ ${video.title}`}
-                    onClickPreview={() => setSelectedVideo(video)}
-                  />
+                  <Box sx={{ position: 'relative', width: 230, height: 180 }}>
+                    <Box
+                      sx={{
+                        left: 28,
+                        bottom: 20,
+                        width: 174,
+                        height: 58,
+                        position: 'absolute',
+                        borderRadius: 1.5,
+                        bgcolor: tone.line,
+                        transform: 'skew(-18deg)',
+                      }}
+                    />
+                    {[0, 1, 2, 3, 4, 5].map((item) => (
+                      <Box
+                        key={item}
+                        sx={{
+                          top: [26, 52, 20, 74, 44, 76][item],
+                          left: [48, 82, 118, 142, 164, 68][item],
+                          width: 34,
+                          height: 34,
+                          display: 'grid',
+                          borderRadius: '50%',
+                          placeItems: 'center',
+                          color: '#fff',
+                          position: 'absolute',
+                          bgcolor: tone.accent,
+                          boxShadow: '0 10px 22px rgba(46,42,36,0.12)',
+                        }}
+                      >
+                        <Iconify icon="solar:monitor-bold" width={16} />
+                      </Box>
+                    ))}
+                  </Box>
                 </Box>
 
-                <Typography
+                <Stack spacing={3}>
+                  {noteFeatures.map((feature) => (
+                    <Stack key={feature.title} direction="row" spacing={2} alignItems="flex-start">
+                      <Box
+                        sx={{
+                          width: 34,
+                          height: 34,
+                          display: 'grid',
+                          flexShrink: 0,
+                          borderRadius: 1.2,
+                          placeItems: 'center',
+                          color: tone.ink,
+                          bgcolor: tone.surface,
+                          border: `1px solid ${tone.line}`,
+                        }}
+                      >
+                        <Iconify icon={feature.icon} width={18} />
+                      </Box>
+                      <Box>
+                        <Typography sx={{ color: tone.ink, fontSize: 17, fontWeight: 950 }}>
+                          {feature.title}
+                        </Typography>
+                        <Typography
+                          sx={{ mt: 0.7, color: tone.muted, fontSize: 13, lineHeight: 1.7 }}
+                        >
+                          {feature.description}
+                        </Typography>
+                      </Box>
+                    </Stack>
+                  ))}
+                </Stack>
+              </Box>
+            </Box>
+          </Box>
+
+          <Box sx={{ ...sectionSx }}>
+            <Box
+              sx={{
+                mx: 'auto',
+                p: { xs: 4, md: 6 },
+                maxWidth: 1040,
+                overflow: 'hidden',
+                borderRadius: 2,
+                textAlign: 'center',
+                position: 'relative',
+                bgcolor: tone.soft,
+                border: `1px solid ${tone.line}`,
+              }}
+            >
+              <Box
+                sx={{
+                  top: 32,
+                  left: '18%',
+                  width: 14,
+                  height: 14,
+                  opacity: 0.28,
+                  borderRadius: 0.8,
+                  position: 'absolute',
+                  bgcolor: tone.line,
+                }}
+              />
+              <Box
+                sx={{
+                  right: -26,
+                  bottom: -32,
+                  width: 130,
+                  height: 130,
+                  opacity: 0.35,
+                  borderRadius: '50%',
+                  position: 'absolute',
+                  bgcolor: tone.surface,
+                }}
+              />
+
+              <Typography sx={{ color: tone.ink, fontSize: { xs: 30, md: 42 }, fontWeight: 950 }}>
+                How You Take Your Project?
+              </Typography>
+              <Typography
+                sx={{
+                  mx: 'auto',
+                  mt: 1,
+                  color: tone.muted,
+                  maxWidth: 560,
+                  fontSize: 14,
+                  lineHeight: 1.7,
+                }}
+              >
+                เล่าไอเดียของคุณให้เราฟัง แล้วเราจะช่วยแปลงเป็นแผนงานและหน้าจอแรกให้เห็นภาพ
+              </Typography>
+
+              <Stack direction="row" spacing={1.2} justifyContent="center" sx={{ mt: 3 }}>
+                <Button
+                  href="/contact-us"
+                  variant="contained"
                   sx={{
-                    mt: 1.25,
-                    px: 0.5,
-                    color: theme.palette.secondary.main,
-                    fontSize: 13,
-                    fontWeight: 800,
+                    color: '#fff',
+                    borderRadius: 999,
+                    bgcolor: tone.ink,
+                    fontSize: 12,
+                    fontWeight: 900,
+                    boxShadow: 'none',
+                    '&:hover': { bgcolor: '#000', boxShadow: 'none' },
                   }}
                 >
-                  {video.title}
-                </Typography>
-              </Box>
-            ))}
+                  ปรึกษาโปรเจกต์
+                </Button>
+                <Button
+                  variant="contained"
+                  sx={{
+                    color: tone.ink,
+                    borderRadius: 999,
+                    bgcolor: tone.surface,
+                    fontSize: 12,
+                    fontWeight: 900,
+                    boxShadow: 'none',
+                    '&:hover': { bgcolor: tone.surface, boxShadow: 'none' },
+                  }}
+                >
+                  ดูขั้นตอนทำงาน
+                </Button>
+              </Stack>
+            </Box>
           </Box>
+
+          <CodeForCatFooter />
         </Box>
       </Box>
-
-      {/* <Box
-        sx={{
-          textAlign: 'center',
-          px: { xs: 2.5, md: 8, lg: 13 },
-          py: { xs: 8, md: 12 },
-          minHeight: 600,
-          backgroundImage: `
-            linear-gradient(180deg, ${theme.palette.primary.main} 0%, rgba(9,47,33,0.64) 32%, ${theme.palette.primary.main} 100%),
-            linear-gradient(90deg, rgba(5,37,24,0.94) 0%, rgba(18,61,43,0.48) 52%, rgba(5,37,24,0.9) 100%),
-            linear-gradient(0deg, rgba(217,181,109,0.1), rgba(217,181,109,0.1)),
-            url(${SCENES_IMAGE})
-          `,
-          backgroundSize: 'cover',
-          backgroundPosition: '100% 100%',
-        }}
-      >
-        <Typography
-          sx={{
-            mt: 2,
-            color: theme.palette.secondary.main,
-            fontSize: { xs: 24, sm: 32, md: 40 },
-            fontWeight: 800,
-            lineHeight: 0.92,
-            textTransform: 'uppercase',
-          }}
-        >
-          ผู้มีส่วนร่วม
-        </Typography>
-        <Stack
-          mt={6}
-          sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}
-          spacing={4}
-        >
-          <Image alt="Single logo" sx={{ width: 200 }} src="/assets/akhahas-sri/logo-kaitod.png" />
-        </Stack>
-      </Box> */}
-
-      <Dialog
-        fullWidth
-        open={!!selectedImage}
-        onClose={() => setSelectedImage(null)}
-        slotProps={{
-          paper: {
-            sx: {
-              overflow: 'hidden',
-              bgcolor: theme.palette.primary.main,
-              borderRadius: 1.5,
-              border: '1px solid rgba(234,215,161,0.24)',
-            },
-          },
-        }}
-      >
-        <Box
-          sx={{
-            px: 2,
-            py: 1.25,
-            gap: 1.5,
-            display: 'flex',
-            alignItems: 'center',
-            color: theme.palette.secondary.main,
-            justifyContent: 'space-between',
-          }}
-        >
-          <Typography sx={{ fontSize: 16, fontWeight: 800 }}>{selectedImage?.title}</Typography>
-
-          <IconButton onClick={() => setSelectedImage(null)} sx={{ color: 'inherit' }}>
-            <Iconify icon="mingcute:close-line" />
-          </IconButton>
-        </Box>
-
-        <DialogContent sx={{ py: 3, bgcolor: theme.palette.primary.main, width: 'auto' }}>
-          {selectedImage && (
-            <Box
-              component="img"
-              alt={selectedImage.title}
-              src={selectedImage.src}
-              sx={{
-                width: 1,
-                height: 'auto',
-                display: 'block',
-                objectFit: 'contain',
-                maxHeight: { xs: '78vh', md: '82vh' },
-                bgcolor: theme.palette.primary.main,
-              }}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
-
-      <Dialog
-        fullWidth
-        maxWidth="lg"
-        open={!!selectedVideo}
-        onClose={handleCloseVideo}
-        slotProps={{
-          paper: {
-            sx: {
-              overflow: 'hidden',
-              bgcolor: '#052518',
-              borderRadius: 1.5,
-              border: '1px solid rgba(234,215,161,0.24)',
-            },
-          },
-        }}
-      >
-        <Box
-          sx={{
-            px: 2,
-            py: 1.25,
-            gap: 1.5,
-            display: 'flex',
-            alignItems: 'center',
-            color: theme.palette.secondary.main,
-            justifyContent: 'space-between',
-          }}
-        >
-          <Typography sx={{ fontSize: 16, fontWeight: 800 }}>{selectedVideo?.title}</Typography>
-
-          <IconButton onClick={handleCloseVideo} sx={{ color: 'inherit' }}>
-            <Iconify icon="mingcute:close-line" />
-          </IconButton>
-        </Box>
-
-        <DialogContent sx={{ p: 0, bgcolor: 'black' }}>
-          <Box sx={{ width: 1, aspectRatio: '16 / 9' }}>
-            {selectedVideo && (
-              <ReactPlayer controls playing src={selectedVideo.src} width="100%" height="100%" />
-            )}
-          </Box>
-        </DialogContent>
-      </Dialog>
-
-      {/* <Stack
-        component="footer"
-        direction="row"
-        spacing={4}
-        justifyContent="center"
-        sx={{ pb: 7, color: theme.palette.secondary.main, bgcolor: theme.palette.primary.main }}
-      >
-        {_socials.map((social) => (
-          <IconButton key={social.label}>
-            {social.value === 'twitter' && <Iconify icon="socials:twitter" />}
-            {social.value === 'facebook' && <Iconify icon="socials:facebook" />}
-            {social.value === 'instagram' && <Iconify icon="socials:instagram" />}
-            {social.value === 'linkedin' && <Iconify icon="socials:linkedin" />}
-          </IconButton>
-        ))}
-      </Stack> */}
     </Box>
   );
 }

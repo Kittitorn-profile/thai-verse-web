@@ -49,7 +49,7 @@ export const themeConfig: ThemeConfig = {
     primary: {
       lighter: '#C8FAD6',
       light: '#5f704f',
-      main: '#123d2b',
+      main: '#045319',
       dark: '#052518',
       darker: '#092f21',
       contrastText: '#FFFFFF',
@@ -58,8 +58,8 @@ export const themeConfig: ThemeConfig = {
       lighter: '#f6eddb',
       light: '#ead7a1',
       main: '#d9b56d',
-      dark: '#5119B7',
-      darker: '#27097A',
+      dark: '#d9b56d',
+      darker: '#d9b56d',
       contrastText: '#FFFFFF',
     },
     info: {

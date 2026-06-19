@@ -2,8 +2,8 @@
 
 import type { Feature, Geometry, GeoJsonProperties, FeatureCollection } from 'geojson';
 
+import { useMemo, useState } from 'react';
 import { geoPath, geoMercator } from 'd3-geo';
-import { useMemo, useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -11,7 +11,12 @@ import InputBase from '@mui/material/InputBase';
 import Typography from '@mui/material/Typography';
 import { alpha, useTheme } from '@mui/material/styles';
 
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hooks';
+
 import { Iconify } from 'src/components/iconify';
+
+import { rewindGeoJson, useThailandProvincesGeoJson } from 'src/sections/province/thailand-geojson';
 
 // ----------------------------------------------------------------------
 
@@ -26,49 +31,11 @@ type ThailandProvinceFeature = Feature<Geometry, GeoJsonProperties> & {
   rsmKey?: string;
 };
 
-const THAILAND_PROVINCES_GEOJSON_PATH = '/assets/maps/thailand-provinces.geojson';
-
-const MAP_STATUS_COLORS = {
-  approved: ['#0d7f08', '#168d0d', '#269b18', '#3cb72b', '#67c64e'],
-  rejected: ['#5132d9', '#653cef', '#7d52ff'],
-  noScore: ['#7ccb5a'],
+type MapStatusColors = {
+  approved: string[];
+  rejected: string[];
+  noScore: string[];
 };
-
-const MAP_SUMMARY = [
-  { label: 'ไม่ประสงค์ลงคะแนน', value: '473,957', color: MAP_STATUS_COLORS.noScore[0] },
-  { label: 'ไม่เห็นชอบ', value: '2,024,904', color: MAP_STATUS_COLORS.rejected[1] },
-  { label: 'เห็นชอบ', value: '4,412,308', color: MAP_STATUS_COLORS.approved[4] },
-];
-
-function rewindGeometry(geometry: any) {
-  const reverseRing = (ring: number[][]) => [...ring].reverse();
-
-  if (geometry.type === 'Polygon') {
-    return {
-      ...geometry,
-      coordinates: geometry.coordinates.map(reverseRing),
-    };
-  }
-
-  if (geometry.type === 'MultiPolygon') {
-    return {
-      ...geometry,
-      coordinates: geometry.coordinates.map((polygon: number[][][]) => polygon.map(reverseRing)),
-    };
-  }
-
-  return geometry;
-}
-
-function rewindGeoJson(geoJson: any) {
-  return {
-    ...geoJson,
-    features: geoJson.features.map((feature: any) => ({
-      ...feature,
-      geometry: rewindGeometry(feature.geometry),
-    })),
-  };
-}
 
 function getGeometryCenter(geometry: any): [number, number] | undefined {
   let minX = Infinity;
@@ -120,7 +87,7 @@ function getProvinceFromGeography(geo: ThailandProvinceFeature): ThailandProvinc
   };
 }
 
-function getProvinceColor(province: ThailandProvince) {
+function getProvinceColor(province: ThailandProvince, mapStatusColors: MapStatusColors) {
   const source = province.iso ?? province.name;
   const hash = source.split('').reduce((total, char) => total + char.charCodeAt(0), 0);
 
@@ -129,23 +96,59 @@ function getProvinceColor(province: ThailandProvince) {
       source
     )
   ) {
-    return MAP_STATUS_COLORS.rejected[hash % MAP_STATUS_COLORS.rejected.length];
+    return mapStatusColors.rejected[hash % mapStatusColors.rejected.length];
   }
 
   if (hash % 13 === 0) {
-    return MAP_STATUS_COLORS.rejected[hash % MAP_STATUS_COLORS.rejected.length];
+    return mapStatusColors.rejected[hash % mapStatusColors.rejected.length];
   }
 
   if (hash % 11 === 0) {
-    return MAP_STATUS_COLORS.noScore[0];
+    return mapStatusColors.noScore[0];
   }
 
-  return MAP_STATUS_COLORS.approved[hash % MAP_STATUS_COLORS.approved.length];
+  return mapStatusColors.approved[hash % mapStatusColors.approved.length];
 }
 
 export default function ThailandMap() {
   const theme = useTheme();
-  const [mapGeoJson, setMapGeoJson] = useState<FeatureCollection>(EMPTY_GEOJSON);
+  const router = useRouter();
+  const mapStatusColors = useMemo(
+    () => ({
+      approved: [
+        theme.palette.primary.darker,
+        theme.palette.primary.dark,
+        theme.palette.primary.main,
+        theme.palette.primary.light,
+        theme.palette.primary.lighter,
+      ],
+      rejected: [
+        theme.palette.primary.dark,
+        theme.palette.primary.main,
+        theme.palette.primary.light,
+      ],
+      noScore: [theme.palette.primary.lighter],
+    }),
+    [
+      theme.palette.primary.dark,
+      theme.palette.primary.darker,
+      theme.palette.primary.light,
+      theme.palette.primary.lighter,
+      theme.palette.primary.main,
+    ]
+  );
+  const mapSummary = useMemo(
+    () => [
+      { label: 'สถานที่สำคัญ', value: 'แลนด์มาร์ก', color: mapStatusColors.noScore[0] },
+      { label: 'วัฒนธรรมท้องถิ่น', value: 'เรื่องเล่า', color: mapStatusColors.rejected[1] },
+      { label: 'พิกัดสำรวจ', value: 'Lat/Lng', color: mapStatusColors.approved[4] },
+    ],
+    [mapStatusColors]
+  );
+  const { data: mapGeoJson = EMPTY_GEOJSON } = useThailandProvincesGeoJson({
+    select: rewindGeoJson,
+  });
+  const mapFeatures = Array.isArray(mapGeoJson.features) ? mapGeoJson.features : [];
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProvince, setSelectedProvince] = useState<ThailandProvince | null>(null);
   const projection = useMemo(
@@ -164,28 +167,14 @@ export default function ThailandMap() {
   })();
 
   const handleSelectProvince = (province: ThailandProvince) => {
-    const isSameProvince = province.iso === selectedProvince?.iso;
+    const provinceId = province.iso ?? province.id;
 
-    setSelectedProvince(isSameProvince ? null : province);
-    setSearchQuery(isSameProvince ? '' : province.name);
+    if (provinceId) {
+      setSelectedProvince(province);
+      setSearchQuery(province.name);
+      router.push(paths.province.details(provinceId, province.name));
+    }
   };
-
-  useEffect(() => {
-    const controller = new AbortController();
-
-    fetch(THAILAND_PROVINCES_GEOJSON_PATH, { signal: controller.signal })
-      .then((response) => response.json())
-      .then((geoJson) => {
-        setMapGeoJson(rewindGeoJson(geoJson));
-      })
-      .catch((error) => {
-        if (error.name !== 'AbortError') {
-          console.error('Failed to load Thailand map GeoJSON', error);
-        }
-      });
-
-    return () => controller.abort();
-  }, []);
 
   return (
     <Box
@@ -204,6 +193,38 @@ export default function ThailandMap() {
       <Box
         sx={{
           top: { xs: 18, md: 32 },
+          left: { xs: 18, md: 210 },
+          zIndex: 3,
+          maxWidth: { xs: 190, sm: 360 },
+          position: 'absolute',
+        }}
+      >
+        <Typography
+          sx={{
+            color: theme.palette.primary.darker,
+            fontSize: { xs: 24, sm: 36 },
+            fontWeight: 900,
+            lineHeight: 1,
+          }}
+        >
+          Thailand Cultural
+        </Typography>
+        <Typography
+          sx={{
+            mt: 0.8,
+            color: alpha(theme.palette.primary.darker, 0.74),
+            fontSize: { xs: 12, sm: 15 },
+            fontWeight: 700,
+            lineHeight: 1.45,
+          }}
+        >
+          คลิกจังหวัดเพื่อสำรวจสถานที่ วัฒนธรรม และพิกัดสำคัญ
+        </Typography>
+      </Box>
+
+      <Box
+        sx={{
+          top: { xs: 116, sm: 24, md: 32 },
           right: { xs: 18, md: 44 },
           zIndex: 3,
           width: { xs: 220, sm: 270 },
@@ -223,7 +244,7 @@ export default function ThailandMap() {
         <Iconify icon="eva:search-fill" width={21} sx={{ color: theme.palette.grey[800] }} />
         <InputBase
           value={searchQuery}
-          placeholder="จังหวัด อำเภอ ตำบล"
+          placeholder="ค้นหาจังหวัด / วัฒนธรรม"
           onChange={(event) => setSearchQuery(event.target.value)}
           sx={{
             flex: 1,
@@ -242,15 +263,19 @@ export default function ThailandMap() {
       <Box
         sx={{
           pt: { xs: 8, md: 4 },
-          px: { xs: 1, sm: 3, md: 5 },
-          pb: { xs: 10, md: 10 },
+          px: { xs: 0, sm: 3, md: 30 },
+          pb: 4,
+          display: 'flex',
+          justifyContent: 'center',
         }}
       >
         <Box
           sx={{
-            width: { xs: 1, md: '86%' },
-            maxWidth: 960,
-            height: { xs: 660, sm: 820, md: 960 },
+            mx: 'auto',
+            width: { xs: '170vw', sm: 1, md: '86%' },
+            maxWidth: { xs: 'none', sm: 960 },
+            height: { xs: 980, sm: 820, md: 960 },
+            flexShrink: 0,
             '& svg': {
               width: '100%',
               height: '100%',
@@ -267,21 +292,23 @@ export default function ThailandMap() {
         >
           <svg
             viewBox="0 0 960 760"
-            width={960}
-            height={760}
+            width={1200}
+            height={1000}
             role="img"
             aria-label="Interactive Thailand province map"
           >
-            {mapGeoJson.features.map((geo, index) => {
+            {mapFeatures.map((geo, index) => {
               const province = getProvinceFromGeography(geo);
               const isSelected = province.iso === selectedProvince?.iso;
               const query = searchQuery.trim().toLowerCase();
               const isMatched =
                 !!query && `${province.name} ${province.iso ?? ''}`.toLowerCase().includes(query);
-              const provinceFill = getProvinceColor(province);
-              const inactiveFill = selectedProvince ? '#dfe6dc' : provinceFill;
-              const selectedFill = '#38b91f';
-              const matchedFill = '#b786ff';
+              const provinceFill = getProvinceColor(province, mapStatusColors);
+              const inactiveFill = selectedProvince
+                ? alpha(theme.palette.primary.lighter, 0.5)
+                : provinceFill;
+              const selectedFill = theme.palette.primary.main;
+              const matchedFill = theme.palette.primary.light;
               const pathData = geoPathGenerator(geo);
 
               if (!pathData) {
@@ -407,12 +434,11 @@ export default function ThailandMap() {
               lineHeight: 1.5,
             }}
           >
-            Province code {selectedProvince.iso ?? selectedProvince.id ?? 'N/A'} · selected on the
-            interactive Thailand map
+            เลือกจังหวัดนี้เพื่อเปิดแผนที่วัฒนธรรม สถานที่สำคัญ และพิกัดการเดินทาง
           </Typography>
 
           <Stack spacing={1.2} sx={{ mt: 2 }}>
-            {MAP_SUMMARY.map((item) => (
+            {mapSummary.map((item) => (
               <Stack key={item.label} direction="row" alignItems="center" spacing={1.2}>
                 <Box
                   sx={{

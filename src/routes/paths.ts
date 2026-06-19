@@ -22,6 +22,10 @@ export const paths = {
   payment: '/payment',
   about: '/about-us',
   contact: '/contact-us',
+  province: {
+    details: (id: string, name?: string) =>
+      `/province/${id}${name ? `?name=${encodeURIComponent(name)}` : ''}`,
+  },
   faqs: '/faqs',
   page403: '/error/403',
   page404: '/error/404',

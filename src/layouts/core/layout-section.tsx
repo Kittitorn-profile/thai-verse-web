@@ -56,9 +56,9 @@ export function LayoutSection({
           </>
         ) : (
           <>
-            {headerSection}
+            {/* {headerSection} */}
             {children}
-            {footerSection}
+            {/* {footerSection} */}
           </>
         )}
       </LayoutRoot>
