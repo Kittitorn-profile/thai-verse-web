@@ -17,7 +17,6 @@ const navItems = [
   { label: 'เกี่ยวกับเรา', href: '/about-us' },
   { label: 'บริการ', href: '/#services' },
   { label: 'ผลงาน', href: '/#clients' },
-  { label: 'ขั้นตอน', href: '/#workflow' },
   { label: 'ราคา', href: '/#pricing' },
   { label: 'ติดต่อ', href: '/contact-us' },
 ];
@@ -109,7 +108,7 @@ export function CodeForCatHeader({ activeHref, sticky = false }: CodeForCatHeade
           zIndex: isPinned ? 20 : 'auto',
           mx: 'auto',
           py: 2,
-          px: 3,
+          px: 2,
           width: isPinned
             ? { xs: 'calc(100% - 70px)', md: 'min(1200px, calc(100% - 10% - 16px))' }
             : 1,

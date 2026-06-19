@@ -77,7 +77,7 @@ export function CodeForCatFooter() {
               Code for Cat
             </Typography>
           </Stack>
-          <Typography sx={{ mt: 1.4, color: tone.muted, maxWidth: 250, fontSize: 13 }}>
+          <Typography sx={{ mt: 1.4, color: tone.muted, maxWidth: 250, fontSize: 14 }}>
             รับทำเว็บไซต์ แอปพลิเคชัน และระบบหลังบ้านสำหรับธุรกิจที่อยากเริ่มต้นอย่างมืออาชีพ
           </Typography>
         </Box>
@@ -95,7 +95,7 @@ export function CodeForCatFooter() {
                   href={link.href}
                   sx={{
                     color: tone.muted,
-                    fontSize: 12,
+                    fontSize: 14,
                     fontWeight: 700,
                     textDecoration: 'none',
                     '&:hover': { color: tone.ink },

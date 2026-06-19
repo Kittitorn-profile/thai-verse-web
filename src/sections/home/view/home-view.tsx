@@ -193,7 +193,7 @@ const noteFeatures = [
 
 const sectionSx = {
   px: { xs: 2.25, md: 7 },
-  py: { xs: 7, md: 15 },
+  py: { xs: 7, md: 12 },
   bgcolor: 'secondary.main',
 };
 
@@ -566,7 +566,7 @@ function DesktopPreview({ service }: { service: ServiceTab }) {
                   >
                     <Iconify icon="solar:check-circle-bold" width={12} />
                   </Box>
-                  <Typography sx={{ color: 'primary.darker', fontSize: 9.5, fontWeight: 900 }}>
+                  <Typography sx={{ color: 'primary.darker', fontSize: 6, fontWeight: 900 }}>
                     {item}
                   </Typography>
                 </Stack>
@@ -966,7 +966,7 @@ export function HomeView() {
               component={m.p}
               variants={fadeUp}
               transition={springTransition}
-              sx={{ mx: 'auto', mt: 1, color: 'primary.dark', maxWidth: 430, fontSize: 18 }}
+              sx={{ mx: 'auto', mt: 1, color: 'primary.dark', maxWidth: 430, fontSize: 16 }}
             >
               เลือกบริการที่เหมาะกับธุรกิจของคุณ จะเริ่มจากเว็บไซต์หน้าเดียวหรือระบบเต็มรูปแบบก็ได้
             </Typography>
@@ -987,13 +987,14 @@ export function HomeView() {
             >
               <Stack
                 direction="row"
+                spacing={{ xs: 1.2, md: 1.5 }}
                 justifyContent={{ xs: 'flex-start', md: 'center' }}
                 sx={{
                   mx: { xs: 0, md: 'auto' },
                   p: 0.6,
                   width: { xs: 'max-content', md: 'fit-content' },
                   minWidth: { xs: '100%', md: 'auto' },
-                  borderRadius: 999,
+                  borderRadius: 2,
                   bgcolor: 'secondary.light',
                 }}
               >
@@ -1015,11 +1016,11 @@ export function HomeView() {
                         cursor: 'pointer',
                         flexShrink: 0,
                         whiteSpace: 'nowrap',
-                        borderRadius: 999,
+                        borderRadius: 2,
                         bgcolor: isActive ? 'secondary.lighter' : 'transparent',
                         boxShadow: isActive ? '0 10px 20px rgba(46,42,36,0.08)' : 'none',
                         fontFamily: 'inherit',
-                        fontSize: 12,
+                        fontSize: 14,
                         fontWeight: 800,
                         transition: 'background-color 180ms ease, box-shadow 180ms ease',
                         '&:hover': {
@@ -1271,7 +1272,7 @@ export function HomeView() {
                 component={m.p}
                 variants={fadeUp}
                 transition={springTransition}
-                sx={{ mt: 1, color: 'primary.dark', maxWidth: 600, fontSize: 18, lineHeight: 1.7 }}
+                sx={{ mt: 1, color: 'primary.dark', maxWidth: 600, fontSize: 16, lineHeight: 1.7 }}
               >
                 เลือกแพ็กเกจที่เหมาะกับเป้าหมายของคุณ
                 เริ่มจากหน้าเว็บไซต์ขนาดเล็กไปจนถึงเว็บแอปและระบบเฉพาะทาง
@@ -1319,7 +1320,7 @@ export function HomeView() {
                       sx={{
                         mt: 1,
                         color: plan.highlighted ? 'primary.dark' : 'rgba(255,255,255,0.68)',
-                        fontSize: 12,
+                        fontSize: 16,
                         lineHeight: 1.6,
                       }}
                     >
@@ -1334,7 +1335,7 @@ export function HomeView() {
                             width={15}
                             sx={{ color: plan.highlighted ? 'primary.main' : '#fff' }}
                           />
-                          <Typography sx={{ fontSize: 12, fontWeight: 750 }}>{feature}</Typography>
+                          <Typography sx={{ fontSize: 14, fontWeight: 750 }}>{feature}</Typography>
                         </Stack>
                       ))}
                     </Stack>
@@ -1424,137 +1425,15 @@ export function HomeView() {
                   display: 'grid',
                   gap: { xs: 4, md: 6 },
                   alignItems: 'center',
-                  gridTemplateColumns: { xs: '1fr', md: '0.9fr 1.1fr' },
+                  gridTemplateColumns: { xs: '1fr', md: '0.8fr 1.2fr' },
                 }}
               >
-                <Box
-                  sx={{
-                    p: 4,
-                    minHeight: 300,
-                    display: 'grid',
-                    borderRadius: 2,
-                    placeItems: 'center',
-                    bgcolor: 'secondary.lighter',
-                    border: 1,
-                    borderColor: 'secondary.darker',
-                    boxShadow: '0 18px 48px rgba(46,42,36,0.06)',
-                  }}
-                >
-                  <Box sx={{ position: 'relative', width: { xs: 260, sm: 340 }, height: 190 }}>
-                    <Box
-                      sx={{
-                        left: 18,
-                        right: 18,
-                        top: 78,
-                        height: 2,
-                        position: 'absolute',
-                        bgcolor: 'secondary.darker',
-                      }}
-                    />
-                    {(
-                      [
-                        { label: 'Brief', icon: 'solar:file-text-bold', top: 18, left: 0 },
-                        { label: 'Design', icon: 'solar:palette-bold', top: 88, left: 24 },
-                        { label: 'Build', icon: 'solar:settings-bold', top: 18, left: 48 },
-                        { label: 'Test', icon: 'solar:shield-check-bold', top: 88, left: 72 },
-                        { label: 'Launch', icon: 'solar:flag-bold', top: 18, left: 96 },
-                      ] as const
-                    ).map((step, index) => (
-                      <Box
-                        key={step.label}
-                        sx={{
-                          top: step.top,
-                          left: `${step.left}%`,
-                          width: 68,
-                          position: 'absolute',
-                          transform: index === 4 ? 'translateX(-100%)' : 'translateX(-50%)',
-                        }}
-                      >
-                        <Box
-                          sx={{
-                            mx: 'auto',
-                            width: 38,
-                            height: 38,
-                            display: 'grid',
-                            borderRadius: '50%',
-                            placeItems: 'center',
-                            color: '#fff',
-                            bgcolor: 'primary.main',
-                            boxShadow: '0 10px 22px rgba(46,42,36,0.14)',
-                          }}
-                        >
-                          <Iconify icon={step.icon} width={18} />
-                        </Box>
-                        <Typography
-                          sx={{
-                            mt: 0.7,
-                            color: 'primary.darker',
-                            fontSize: 10,
-                            fontWeight: 900,
-                            textAlign: 'center',
-                          }}
-                        >
-                          {step.label}
-                        </Typography>
-                      </Box>
-                    ))}
-                    <Box
-                      sx={{
-                        left: 30,
-                        right: 30,
-                        bottom: 8,
-                        p: 1.2,
-                        position: 'absolute',
-                        borderRadius: 2,
-                        bgcolor: 'secondary.light',
-                        border: 1,
-                        borderColor: 'secondary.darker',
-                        boxShadow: '0 16px 34px rgba(46,42,36,0.08)',
-                      }}
-                    >
-                      <Stack direction="row" spacing={1} alignItems="center">
-                        <Box
-                          sx={{
-                            width: 10,
-                            height: 10,
-                            borderRadius: '50%',
-                            bgcolor: 'primary.main',
-                          }}
-                        />
-                        <Box
-                          sx={{
-                            flex: 1,
-                            height: 8,
-                            borderRadius: 999,
-                            bgcolor: 'secondary.lighter',
-                          }}
-                        />
-                        <Box
-                          sx={{
-                            width: 48,
-                            height: 8,
-                            borderRadius: 999,
-                            bgcolor: 'secondary.darker',
-                          }}
-                        />
-                      </Stack>
-                      <Stack direction="row" spacing={0.8} sx={{ mt: 1 }}>
-                        {[0, 1, 2].map((item) => (
-                          <Box
-                            key={item}
-                            sx={{
-                              flex: 1,
-                              height: 22,
-                              borderRadius: 1.2,
-                              bgcolor: item === 1 ? 'primary.lighter' : 'secondary.lighter',
-                            }}
-                          />
-                        ))}
-                      </Stack>
-                    </Box>
-                  </Box>
-                </Box>
-
+                <Image
+                  src="/assets/code-for-cat/logo-coding.png"
+                  alt="Logo"
+                  ratio="1/1"
+                  sx={{ width: { xs: 250, md: 350 }, height: { xs: 250, md: 350 } }}
+                />
                 <Stack spacing={3}>
                   {noteFeatures.map((feature) => (
                     <Stack
@@ -1587,7 +1466,7 @@ export function HomeView() {
                           {feature.title}
                         </Typography>
                         <Typography
-                          sx={{ mt: 0.7, color: 'primary.dark', fontSize: 13, lineHeight: 1.7 }}
+                          sx={{ mt: 0.7, color: 'primary.dark', fontSize: 16, lineHeight: 1.7 }}
                         >
                           {feature.description}
                         </Typography>
@@ -1658,7 +1537,7 @@ export function HomeView() {
                   mt: 1,
                   color: 'primary.dark',
                   maxWidth: 560,
-                  fontSize: 18,
+                  fontSize: 16,
                   lineHeight: 1.7,
                 }}
               >
