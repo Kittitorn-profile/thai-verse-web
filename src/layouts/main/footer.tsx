@@ -177,7 +177,7 @@ export function HomeFooter({ sx, ...other }: FooterProps) {
       <Container>
         <Logo />
         <Box sx={{ mt: 1, typography: 'caption', color: theme.palette.secondary.main }}>
-          © FLAVIN
+          © CODE FOR CAT. All rights reserved.
         </Box>
       </Container>
     </FooterRoot>
